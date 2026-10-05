@@ -2136,14 +2136,14 @@ export interface MathJsInstance extends MathJsFactory {
    */
   range(str: string, includeEnd?: boolean): Matrix
   range(
-    start: number | BigNumber,
-    end: number | BigNumber,
+    start: number | BigNumber | Fraction,
+    end: number | BigNumber | Fraction,
     includeEnd?: boolean
   ): Matrix
   range(
-    start: number | BigNumber | Unit,
-    end: number | BigNumber | Unit,
-    step: number | BigNumber | Unit,
+    start: number | BigNumber | Fraction | Unit,
+    end: number | BigNumber | Fraction | Unit,
+    step: number | BigNumber | Fraction | Unit,
     includeEnd?: boolean
   ): Matrix
 
@@ -5890,14 +5890,14 @@ export interface MathJsChain<TValue> {
    */
   range(this: MathJsChain<string>, includeEnd?: boolean): MathJsChain<Matrix>
   range(
-    this: MathJsChain<number | BigNumber>,
-    end: number | BigNumber,
+    this: MathJsChain<number | BigNumber | Fraction>,
+    end: number | BigNumber | Fraction,
     includeEnd?: boolean
   ): MathJsChain<Matrix>
   range(
-    this: MathJsChain<number | BigNumber | Unit>,
-    end: number | BigNumber | Unit,
-    step: number | BigNumber | Unit,
+    this: MathJsChain<number | BigNumber | Fraction | Unit>,
+    end: number | BigNumber | Fraction | Unit,
+    step: number | BigNumber | Fraction | Unit,
     includeEnd?: boolean
   ): MathJsChain<Matrix>
 

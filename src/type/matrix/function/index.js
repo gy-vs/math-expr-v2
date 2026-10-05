@@ -1,4 +1,4 @@
-import { isBigNumber, isMatrix, isArray } from '../../../utils/is.js'
+import { isBigNumber, isFraction, isMatrix, isArray } from '../../../utils/is.js'
 import { factory } from '../../../utils/factory.js'
 
 const name = 'index'
@@ -41,14 +41,22 @@ export const createIndex = /* #__PURE__ */ factory(name, dependencies, ({ typed,
    * @return {Index}        Returns the created index
    */
   return typed(name, {
-    '...number | string | BigNumber | Range | Array | Matrix': function (args) {
+    '...number | string | BigNumber | Fraction | Range | Array | Matrix': function (args) {
       const ranges = args.map(function (arg) {
         if (isBigNumber(arg)) {
           return arg.toNumber() // convert BigNumber to Number
+        } else if (isFraction(arg)) {
+          return arg.valueOf() // convert Fraction to Number
         } else if (isArray(arg) || isMatrix(arg)) {
           return arg.map(function (elem) {
-            // convert BigNumber to Number
-            return isBigNumber(elem) ? elem.toNumber() : elem
+            // convert BigNumber and Fraction to Number
+            if (isBigNumber(elem)) {
+              return elem.toNumber()
+            } else if (isFraction(elem)) {
+              return elem.valueOf()
+            } else {
+              return elem
+            }
           })
         } else {
           return arg
