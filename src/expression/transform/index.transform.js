@@ -1,4 +1,4 @@
-import { isArray, isBigNumber, isMatrix, isNumber, isRange } from '../../utils/is.js'
+import { isArray, isBigNumber, isFraction, isMatrix, isNumber, isRange } from '../../utils/is.js'
 import { factory } from '../../utils/factory.js'
 
 const name = 'index'
@@ -24,12 +24,14 @@ export const createIndexTransform = /* #__PURE__ */ factory(name, dependencies, 
         arg = arg.map(function (v) { return v - 1 })
       } else if (isArray(arg) || isMatrix(arg)) {
         if (getMatrixDataType(arg) !== 'boolean') {
-          arg = arg.map(function (v) { return v - 1 })
+          arg = arg.map(function (v) { return isFraction(v) ? v.valueOf() - 1 : v - 1 })
         }
       } else if (isNumber(arg)) {
         arg--
       } else if (isBigNumber(arg)) {
         arg = arg.toNumber() - 1
+      } else if (isFraction(arg)) {
+        arg = arg.valueOf() - 1
       } else if (typeof arg === 'string') {
       // leave as is
       } else {

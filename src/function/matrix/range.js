@@ -1,10 +1,10 @@
 import { factory } from '../../utils/factory.js'
-import { noBignumber, noMatrix } from '../../utils/noop.js'
+import { noBignumber, noFraction, noMatrix } from '../../utils/noop.js'
 
 const name = 'range'
-const dependencies = ['typed', 'config', '?matrix', '?bignumber', 'smaller', 'smallerEq', 'larger', 'largerEq', 'add', 'isPositive']
+const dependencies = ['typed', 'config', '?matrix', '?bignumber', '?fraction', 'smaller', 'smallerEq', 'larger', 'largerEq', 'add', 'isPositive']
 
-export const createRange = /* #__PURE__ */ factory(name, dependencies, ({ typed, config, matrix, bignumber, smaller, smallerEq, larger, largerEq, add, isPositive }) => {
+export const createRange = /* #__PURE__ */ factory(name, dependencies, ({ typed, config, matrix, bignumber, fraction, smaller, smallerEq, larger, largerEq, add, isPositive }) => {
   /**
    * Create an array from a range.
    * By default, the range end is excluded. This can be customized by providing
@@ -25,11 +25,11 @@ export const createRange = /* #__PURE__ */ factory(name, dependencies, ({ typed,
    *
    * - `str: string`
    *   A string 'start:end' or 'start:step:end'
-   * - `start: {number | BigNumber | Unit}`
+   * - `start: {number | BigNumber | Fraction | Unit}`
    *   Start of the range
-   * - `end: number | BigNumber | Unit`
+   * - `end: number | BigNumber | Fraction | Unit`
    *   End of the range, excluded by default, included when parameter includeEnd=true
-   * - `step: number | BigNumber | Unit`
+   * - `step: number | BigNumber | Fraction | Unit`
    *   Step size. Default value is 1.
    * - `includeEnd: boolean`
    *   Option to specify whether to include the end or not. False by default.
@@ -85,6 +85,23 @@ export const createRange = /* #__PURE__ */ factory(name, dependencies, ({ typed,
     'BigNumber, BigNumber, BigNumber, boolean': function (start, end, step, includeEnd) {
       return _out(_range(start, end, step, includeEnd))
     },
+
+    'Fraction, Fraction': function (start, end) {
+      const Fraction = start.constructor
+
+      return _out(_range(start, end, new Fraction(1), false))
+    },
+    'Fraction, Fraction, Fraction': function (start, end, step) {
+      return _out(_range(start, end, step, false))
+    },
+    'Fraction, Fraction, boolean': function (start, end, includeEnd) {
+      const Fraction = start.constructor
+
+      return _out(_range(start, end, new Fraction(1), includeEnd))
+    },
+    'Fraction, Fraction, Fraction, boolean': function (start, end, step, includeEnd) {
+      return _out(_range(start, end, step, includeEnd))
+    },
     'Unit, Unit, Unit': function (start, end, step) {
       return _out(_range(start, end, step, false))
     },
@@ -118,6 +135,16 @@ export const createRange = /* #__PURE__ */ factory(name, dependencies, ({ typed,
         bignumber(r.end),
         bignumber(r.step)),
       includeEnd)
+    } else if (config.number === 'Fraction') {
+      if (fraction === undefined) {
+        noFraction()
+      }
+
+      return _out(_range(
+        fraction(r.start),
+        fraction(r.end),
+        fraction(r.step),
+        includeEnd))
     } else {
       return _out(_range(r.start, r.end, r.step, includeEnd))
     }
@@ -125,9 +152,9 @@ export const createRange = /* #__PURE__ */ factory(name, dependencies, ({ typed,
 
   /**
    * Create a range with numbers or BigNumbers
-   * @param {number | BigNumber | Unit} start
-   * @param {number | BigNumber | Unit} end
-   * @param {number | BigNumber | Unit} step
+   * @param {number | BigNumber | Fraction | Unit} start
+   * @param {number | BigNumber | Fraction | Unit} end
+   * @param {number | BigNumber | Fraction | Unit} step
    * @param {boolean} includeEnd
    * @returns {Array} range
    * @private

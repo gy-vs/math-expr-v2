@@ -1,4 +1,4 @@
-import { isArray, isMatrix, isRange } from '../../utils/is.js'
+import { isArray, isFraction, isMatrix, isRange } from '../../utils/is.js'
 import { clone } from '../../utils/object.js'
 import { isInteger } from '../../utils/number.js'
 import { factory } from '../../utils/factory.js'
@@ -67,6 +67,9 @@ export const createIndexClass = /* #__PURE__ */ factory(name, dependencies, ({ I
         }
       } else if (typeof arg === 'number') {
         this._dimensions.push(_createImmutableMatrix([arg]))
+      } else if (isFraction(arg)) {
+        // convert Fraction to number
+        this._dimensions.push(_createImmutableMatrix([arg.valueOf()]))
       } else if (typeof arg === 'string') {
         // object property (arguments.count should be 1)
         this._dimensions.push(arg)
@@ -85,14 +88,18 @@ export const createIndexClass = /* #__PURE__ */ factory(name, dependencies, ({ I
   Index.prototype.isIndex = true
 
   function _createImmutableMatrix (arg) {
+    // convert Fractions to numbers
+    const values = arg.map(function (value) {
+      return isFraction(value) ? value.valueOf() : value
+    })
     // loop array elements
-    for (let i = 0, l = arg.length; i < l; i++) {
-      if (typeof arg[i] !== 'number' || !isInteger(arg[i])) {
+    for (let i = 0, l = values.length; i < l; i++) {
+      if (typeof values[i] !== 'number' || !isInteger(values[i])) {
         throw new TypeError('Index parameters must be positive integer numbers')
       }
     }
     // create matrix
-    return new ImmutableDenseMatrix(arg)
+    return new ImmutableDenseMatrix(values)
   }
 
   /**

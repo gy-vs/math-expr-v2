@@ -1,4 +1,4 @@
-import { isBigNumber } from '../../utils/is.js'
+import { isBigNumber, isFraction } from '../../utils/is.js'
 import { format, sign } from '../../utils/number.js'
 import { factory } from '../../utils/factory.js'
 
@@ -49,6 +49,8 @@ export const createRangeClass = /* #__PURE__ */ factory(name, dependencies, () =
     if (hasStart) {
       if (isBigNumber(start)) {
         start = start.toNumber()
+      } else if (isFraction(start)) {
+        start = start.valueOf()
       } else if (typeof start !== 'number') {
         throw new TypeError('Parameter start must be a number')
       }
@@ -56,6 +58,8 @@ export const createRangeClass = /* #__PURE__ */ factory(name, dependencies, () =
     if (hasEnd) {
       if (isBigNumber(end)) {
         end = end.toNumber()
+      } else if (isFraction(end)) {
+        end = end.valueOf()
       } else if (typeof end !== 'number') {
         throw new TypeError('Parameter end must be a number')
       }
@@ -63,6 +67,8 @@ export const createRangeClass = /* #__PURE__ */ factory(name, dependencies, () =
     if (hasStep) {
       if (isBigNumber(step)) {
         step = step.toNumber()
+      } else if (isFraction(step)) {
+        step = step.valueOf()
       } else if (typeof step !== 'number') {
         throw new TypeError('Parameter step must be a number')
       }
